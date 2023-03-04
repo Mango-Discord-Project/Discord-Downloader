@@ -7,7 +7,6 @@ authors = [
 ]
 dependencies = [
     "requests>=2.28.1",
-    "rich>=12.5.1",
     "pretty-errors>=1.2.25",
 ]
 requires-python = ">=3.10"
