@@ -1,11 +1,8 @@
 import os
+import logging
 
-from rich import print
-from rich.console import Console
 import requests as req
 import pretty_errors
-
-console = Console()
 
 class EmojiRequester:
     def __init__(self, token: str, api_version: int = 9) -> None:
@@ -52,7 +49,7 @@ class EmojiRequester:
     def get_guild_emoji(self, *, guild_id: int, emoji_id: int) -> dict:
         return self.request_get(f'/guilds/{guild_id}/emojis/{emoji_id}').json()
     
-    def download_guild_all_emojis(self, *, guild_id: int, folder: str | None = None):
+    def download_guild_all_emojis(self, *, guild_id: int, folder: str | None = None, filename_type: str = 'id'):
         if folder is None and not os.path.isdir(download_dir:=f'{self.root_dir}/{guild_id}'):
             os.mkdir(download_dir)
         
@@ -63,12 +60,18 @@ class EmojiRequester:
                 image_filename = f'{item["id"]}.{image_format}'
                 
                 image = req.get(f'https://cdn.discordapp.com/emojis/{image_filename}').content
-                with open(f'{download_dir}/{image_filename}', 'wb') as file:
+                if filename_type == 'id':
+                    filename = image_filename
+                elif filename_type == 'name':
+                    filename = f'{item["name"]}.{image_format}'
+                else:
+                    return
+                with open(f'{download_dir}/{filename}', 'wb') as file:
                     file.write(image)
             except Exception as error:
-                console.log(f'error: {error}')
+                logging.info(f'error: {error}')
                 failed += 1
             else:
-                console.log(f'download {image_filename} successful, path: {download_dir}')
+                logging.info(f'download {filename} successful, path: {download_dir}/{filename}')
                 success += 1
-        console.log(f'tasks all finished, success: {success}, failed: {failed}')
+        logging.info(f'tasks all finished, success: {success}, failed: {failed}')
