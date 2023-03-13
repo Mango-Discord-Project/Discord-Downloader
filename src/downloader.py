@@ -32,7 +32,7 @@ def save_information(file_path: str, information: dict | list):
 
 class GuildDownloader:
     object_type: str
-    image_format_mapping: tuple[str] | dict[int, str]
+    image_format_mapping: tuple[str]
     format_key: str
     assets_url: str
 
